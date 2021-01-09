@@ -1,4 +1,4 @@
-(ns mal.types
+(ns sjs.types
   (:require [clojure.test :refer [is]])
   (:gen-class))
 
@@ -10,72 +10,72 @@
 (test-destructure [1 2])
 (test-destructure [1 2 3])
 
-(defn mal-type? [[type value & tail]]
+(defn sjs-type? [[type value & tail]]
   (cond
     (nil? type) false
     (nil? value) false
     (not (nil? tail)) false
     :else true))
 
-(defn mal-inner
-  "The caller of mal-inner must know the type before use the inner value"
+(defn sjs-inner
+  "The caller of sjs-inner must know the type before use the inner value"
   [[_type value :as all]]
-  {:pre (mal-type? all)}
+  {:pre (sjs-type? all)}
   value)
 
-(defn mal-map [[type val :as mal-val] mapper]
-  {:pre (mal-type? mal-val)}
+(defn sjs-map [[type val :as sjs-val] mapper]
+  {:pre (sjs-type? sjs-val)}
   [type (mapper val)])
 
-(defn make-mal-num [num]
+(defn make-sjs-num [num]
   {:pre (number? num)}
   [:number num])
 
-(defn mal-num? [[type val :as all]]
+(defn sjs-num? [[type val :as all]]
   (cond
-    (not (mal-type? all)) false
+    (not (sjs-type? all)) false
     (not= type :number) false
     ;; Should we throw error?
     ;; It is a programmer mistake.
     (not (number? val)) false
     :else true))
 
-(defn make-mal-num-biop [biop]
+(defn make-sjs-num-biop [biop]
   (fn [a b]
-    {:pre [(is (mal-num? a))
-           (is (mal-num? b))]}
-    (let [va (mal-inner a)
-          vb (mal-inner b)]
-      (make-mal-num (biop va vb)))))
+    {:pre [(is (sjs-num? a))
+           (is (sjs-num? b))]}
+    (let [va (sjs-inner a)
+          vb (sjs-inner b)]
+      (make-sjs-num (biop va vb)))))
 
-(is (mal-num? [:number 3]))
-(is (not (mal-num? [:number "3"])))
+(is (sjs-num? [:number 3]))
+(is (not (sjs-num? [:number "3"])))
 
-(defn make-mal-symbol [str]
+(defn make-sjs-symbol [str]
   {:pre [(string? str)]}
   [:symbol str])
 
-(defn mal-symbol? [[type val :as all]]
+(defn sjs-symbol? [[type val :as all]]
   (cond
-    (not (mal-type? all)) false
+    (not (sjs-type? all)) false
     (not= type :symbol) false
     ;; Should we throw error?
     ;; It is a programmer mistake.
     (not (string? val)) false
     :else true))
 
-(defn mal-symbol->str [[_type value :as symbol]]
-  {:pre [(mal-symbol? symbol)]}
+(defn sjs-symbol->str [[_type value :as symbol]]
+  {:pre [(sjs-symbol? symbol)]}
   value)
 
-(defn make-mal-list [val]
+(defn make-sjs-list [val]
   {:pre [(or (vector? val)
              (seq? val))]}
   [:list val])
 
-(defn mal-list? [[type val :as all]]
+(defn sjs-list? [[type val :as all]]
   (cond
-    (not (mal-type? all)) false
+    (not (sjs-type? all)) false
     (not= type :list) false
     ;; Should we throw error?
     ;; It is a programmer mistake.
@@ -85,13 +85,13 @@
 
     :else true))
 
-(defn mal-list-map [mapper mal-list]
-  {:pre [(is (mal-list? mal-list))]}
-  (mal-map mal-list #(map mapper %)))
+(defn sjs-list-map [mapper sjs-list]
+  {:pre [(is (sjs-list? sjs-list))]}
+  (sjs-map sjs-list #(map mapper %)))
 
-(defn mal-list-f-args [mal-list]
-  {:pre (mal-list? mal-list)}
-  (let [[_type inner-arr] mal-list
+(defn sjs-list-f-args [sjs-list]
+  {:pre (sjs-list? sjs-list)}
+  (let [[_type inner-arr] sjs-list
         [f & args] inner-arr]
     [f args]))
 

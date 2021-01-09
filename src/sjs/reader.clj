@@ -1,8 +1,8 @@
-(ns mal.reader
+(ns sjs.reader
   (:require [blancas.kern.core :as kern]
             [blancas.kern.lexer.basic :as lexer]
             [clojure.test :refer [is deftest]]
-            [mal.types :refer [make-mal-num make-mal-symbol make-mal-list]])
+            [sjs.types :refer [make-sjs-num make-sjs-symbol make-sjs-list]])
   (:gen-class))
 
 (declare p-s-expr)
@@ -11,7 +11,7 @@
                  lexer/lexeme
                  kern/many0
                  lexer/parens
-                 (kern/<$> make-mal-list)))
+                 (kern/<$> make-sjs-list)))
 
 (defn symbol-char? [c]
   (and
@@ -35,21 +35,21 @@
   (->> p-symbol-char
        (kern/many1)
        (kern/<+>)
-       (kern/<$> make-mal-symbol)))
+       (kern/<$> make-sjs-symbol)))
 
 (deftest test-p-symbol
-  (is (= (make-mal-symbol "as") (kern/value p-symbol "as"))))
+  (is (= (make-sjs-symbol "as") (kern/value p-symbol "as"))))
 
 (def p-number
-  (kern/<$> make-mal-num lexer/dec-lit))
+  (kern/<$> make-sjs-num lexer/dec-lit))
 
 (def p-s-expr (kern/<|> p-list p-number p-symbol))
 
 (deftest test-p-s-expr
-  (is (= (make-mal-list [(make-mal-num 1) (make-mal-symbol "as")]) (kern/value p-s-expr "(1 as)"))))
+  (is (= (make-sjs-list [(make-sjs-num 1) (make-sjs-symbol "as")]) (kern/value p-s-expr "(1 as)"))))
 
 (defn read-str [str]
   (kern/value p-s-expr str))
 
 (deftest test-read-str
-  (is (= [(make-mal-list [(make-mal-num 1) (make-mal-symbol "as")])] (read-str "(1 as)"))))
+  (is (= [(make-sjs-list [(make-sjs-num 1) (make-sjs-symbol "as")])] (read-str "(1 as)"))))
