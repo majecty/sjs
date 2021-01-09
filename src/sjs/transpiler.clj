@@ -1,6 +1,6 @@
 (ns sjs.transpiler
   (:require [sjs.reader :as reader]
-            [sjs.types :refer [sjs-inner]]
+            [sjs.types :refer [sjs-inner sjs-list?]]
             [clojure.test :refer [deftest is]]
             [clojure.string :as str]
             [sjs.debug :refer [d dm]])
@@ -11,9 +11,23 @@
 ;;  * We may use a prettifier instead.
 
 (declare transpile-stmt)
+(declare transpile-expression)
+
+;; TODO: support (+ a b c)
+(defn transpile-plus [[_plus a b]]
+  (format "(%s + %s)"
+          (sjs-inner (transpile-expression a))
+          (sjs-inner (transpile-expression b))))
+
+(defn transpile-expression [exp]
+  (if (sjs-list? exp)
+    (let [command (sjs-inner (first (sjs-inner exp)))]
+      (condp = command
+        "+" (transpile-plus (sjs-inner exp))))
+    exp))
 
 (defn transpile-const [[_const name val]]
-  (format "const %s = %s;" (sjs-inner name) (sjs-inner val)))
+  (format "const %s = %s;" (sjs-inner name) (transpile-expression val)))
 
 (defn transpile-fun-call [[fun & args]]
   ;; How we can distinguish when to insert semi colon;
@@ -46,6 +60,7 @@
 (deftest repltest
   (is (= 1 1))
   (is (= (transpile "(const a 3)") "const a = 3;"))
+  (is (= (transpile "(const a (+ 3 1))") "const a = (3 + 1);"))
   (is (= (transpile "(foo 'a' 3)") "foo('a', 3)"))
   ;; Make parser handle '(a b c)
   ;; Make parser handle operator
