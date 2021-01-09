@@ -1,6 +1,6 @@
 (ns sjs.transpiler
   (:require [sjs.reader :as reader]
-            [sjs.types :refer [sjs-inner sjs-list?]]
+            [sjs.types :refer [sjs-inner sjs-list? sjs-num? sjs-symbol?]]
             [clojure.test :refer [deftest is]]
             [clojure.string :as str]
             [sjs.debug :refer [d dm]])
@@ -16,15 +16,26 @@
 ;; TODO: support (+ a b c)
 (defn transpile-plus [[_plus a b]]
   (format "(%s + %s)"
-          (sjs-inner (transpile-expression a))
-          (sjs-inner (transpile-expression b))))
+          (transpile-expression a)
+          (transpile-expression b)))
 
-(defn transpile-expression [exp]
-  (if (sjs-list? exp)
+(defn transpile-expression
+  "Transpile expression to string"
+  [exp]
+  (cond
+    (sjs-list? exp)
     (let [command (sjs-inner (first (sjs-inner exp)))]
       (condp = command
         "+" (transpile-plus (sjs-inner exp))))
-    exp))
+
+    (sjs-num? exp)
+    (sjs-inner exp)
+
+    (sjs-symbol? exp)
+    (sjs-inner exp)
+
+    ;; FIXME: Do proper error handling
+    :else (format "?? %s" exp)))
 
 (defn transpile-const [[_const name val]]
   (format "const %s = %s;" (sjs-inner name) (transpile-expression val)))
@@ -32,7 +43,7 @@
 (defn transpile-fun-call [[fun & args]]
   ;; How we can distinguish when to insert semi colon;
   ;; FIXME: transpile arguments if they are list.
-  (format "%s(%s)" (sjs-inner fun) (str/join ", " (map sjs-inner args))))
+  (format "%s(%s)" (sjs-inner fun) (str/join ", " (map transpile-expression args))))
 
 (defn transpile-fun-def [[_fn name args & stmts :as x]]
   (printf "hi fun def")
@@ -44,11 +55,15 @@
           (let [stmt-strings (map transpile-stmt stmts)]
             (str/join "; " stmt-strings))))
 
+(defn transpile-return [[_return exp]]
+  (format "return %s" (transpile-expression exp)))
+
 (defn transpile-stmt [stmt]
   (let [command (sjs-inner (first (sjs-inner stmt)))]
     (condp = command
       "const" (transpile-const (sjs-inner stmt))
       "fn" (transpile-fun-def (sjs-inner stmt))
+      "return" (transpile-return (sjs-inner stmt))
       (transpile-fun-call (sjs-inner stmt)))))  
 
 (defn transpile
@@ -64,4 +79,5 @@
   (is (= (transpile "(foo 'a' 3)") "foo('a', 3)"))
   ;; Make parser handle '(a b c)
   ;; Make parser handle operator
-  (is (= (transpile "(fn foo (list a b c) (+ (+ a b) c))") "")))
+  (is (= (transpile "(fn foo (list a b c) (return (+ (+ a b) c)))")
+         "function foo(list, a, b, c) {return ((a + b) + c)}")))
