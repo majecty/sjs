@@ -20,7 +20,7 @@
 (defn sjs-inner
   "The caller of sjs-inner must know the type before use the inner value"
   [[_type value :as all]]
-  {:pre (sjs-type? all)}
+  {:pre [(is (sjs-type? all))]}
   value)
 
 (defn sjs-map [[type val :as sjs-val] mapper]
