@@ -48,8 +48,21 @@
 (deftest test-p-s-expr
   (is (= (make-sjs-list [(make-sjs-num 1) (make-sjs-symbol "as")]) (kern/value p-s-expr "(1 as)"))))
 
+(def p-file (kern/many p-s-expr))
+
 (defn read-str [str]
   (kern/value p-s-expr str))
 
 (deftest test-read-str
   (is (= [(make-sjs-list [(make-sjs-num 1) (make-sjs-symbol "as")])] (read-str "(1 as)"))))
+
+(defn read-file [txt]
+  (kern/value p-file txt))
+
+(deftest test-read-file
+  (is (= [(make-sjs-list [(make-sjs-num 1)])
+          (make-sjs-list [(make-sjs-symbol "a")])]
+         (read-file "(1)\n(a)")))
+  (is (= [(make-sjs-list [(make-sjs-num 1)])
+          (make-sjs-list [(make-sjs-symbol "a")])]
+         (read-file "(1)(a)"))))
