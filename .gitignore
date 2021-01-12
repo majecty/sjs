@@ -12,5 +12,7 @@ pom.xml.asc
 .hgignore
 .hg/
 
+.clj-kondo/
+
 # emacs
 *~
