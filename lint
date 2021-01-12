@@ -1,0 +1,2 @@
+lein kibit
+clj-kondo --lint src

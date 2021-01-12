@@ -64,7 +64,7 @@
       "const" (transpile-const (sjs-inner stmt))
       "fn" (transpile-fun-def (sjs-inner stmt))
       "return" (transpile-return (sjs-inner stmt))
-      (transpile-fun-call (sjs-inner stmt)))))  
+      (transpile-fun-call (sjs-inner stmt)))))
 
 (defn transpile
   [str]

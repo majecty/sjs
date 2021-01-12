@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.blancas/kern "1.1.0"]
                  [failjure "2.1.1"]]
+  :plugins [[lein-cljfmt "0.7.0"]]
   :main ^:skip-aot sjs.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
