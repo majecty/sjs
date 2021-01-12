@@ -1,7 +1,6 @@
 (ns sjs.printer
   (:require [clojure.test :refer [is]]
-            [clojure.string :as str])
-  (:gen-class))
+            [clojure.string :as str]))
 
 (defn sjs-pr-str [[type value]]
   (cond

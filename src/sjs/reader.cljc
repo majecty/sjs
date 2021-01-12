@@ -2,8 +2,7 @@
   (:require [blancas.kern.core :as kern]
             [blancas.kern.lexer.basic :as lexer]
             [clojure.test :refer [is deftest]]
-            [sjs.types :refer [make-sjs-num make-sjs-symbol make-sjs-list]])
-  (:gen-class))
+            [sjs.types :refer [make-sjs-num make-sjs-symbol make-sjs-list]]))
 
 (declare p-s-expr)
 

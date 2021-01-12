@@ -1,5 +1,4 @@
 (ns sjs.core
-  (:gen-class)
   (:require [sjs.reader :as reader]
             [sjs.transpiler :as transpiler]
             [clojure.string :as str]
@@ -48,3 +47,5 @@
    (f/when-failed
     [e]
     (log/error (f/message e)))))
+
+(set! *main-cli-fn* -main)

@@ -1,5 +1,4 @@
-(ns sjs.debug
-  (:gen-class))
+(ns sjs.debug)
 
 (defn d [arg]
   (printf "debug: %s" arg)

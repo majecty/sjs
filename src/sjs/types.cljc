@@ -1,6 +1,5 @@
 (ns sjs.types
-  (:require [clojure.test :refer [is]])
-  (:gen-class))
+  (:require [clojure.test :refer [is]]))
 
 (defn sjs-type? [[type value & tail]]
   (cond

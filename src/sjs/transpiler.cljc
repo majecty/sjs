@@ -2,8 +2,7 @@
   (:require [sjs.reader :as reader]
             [sjs.types :refer [sjs-inner sjs-list? sjs-num? sjs-symbol?]]
             [clojure.test :refer [deftest is]]
-            [clojure.string :as str])
-  (:gen-class))
+            [clojure.string :as str]))
 
 ;; TODO: Let's split expression and statement
 ;; TODO: Add proper indentation
