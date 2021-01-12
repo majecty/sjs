@@ -2,8 +2,7 @@
   (:require [sjs.reader :as reader]
             [sjs.types :refer [sjs-inner sjs-list? sjs-num? sjs-symbol?]]
             [clojure.test :refer [deftest is]]
-            [clojure.string :as str]
-            [sjs.debug :refer [d dm]])
+            [clojure.string :as str])
   (:gen-class))
 
 ;; TODO: Let's split expression and statement
@@ -45,9 +44,7 @@
   ;; FIXME: transpile arguments if they are list.
   (format "%s(%s)" (sjs-inner fun) (str/join ", " (map transpile-expression args))))
 
-(defn transpile-fun-def [[_fn name args & stmts :as x]]
-  (printf "hi fun def")
-  (d x)
+(defn transpile-fun-def [[_fn name args & stmts]]
   (format "function %s(%s) {%s}"
           (sjs-inner name)
           (let [args-list (sjs-inner args)]
@@ -71,7 +68,6 @@
 
 (defn transpile-str
   [str]
-  (printf "hi transpile")
   (let [sexp (reader/read-str str)]
     (transpile-stmt sexp)))
 

@@ -2,14 +2,6 @@
   (:require [clojure.test :refer [is]])
   (:gen-class))
 
-(defn test-destructure [[type value & tail :as all]]
-  (printf "type %s \n value %s \n tail %s \n all %s \n\n" type value tail all))
-
-(test-destructure [])
-(test-destructure [1])
-(test-destructure [1 2])
-(test-destructure [1 2 3])
-
 (defn sjs-type? [[type value & tail]]
   (cond
     (nil? type) false
