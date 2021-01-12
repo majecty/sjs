@@ -66,7 +66,10 @@
       "return" (transpile-return (sjs-inner stmt))
       (transpile-fun-call (sjs-inner stmt)))))
 
-(defn transpile
+(defn transpile [sexp]
+  (transpile-stmt sexp))
+
+(defn transpile-str
   [str]
   (printf "hi transpile")
   (let [sexp (reader/read-str str)]
@@ -74,10 +77,10 @@
 
 (deftest repltest
   (is (= 1 1))
-  (is (= (transpile "(const a 3)") "const a = 3;"))
-  (is (= (transpile "(const a (+ 3 1))") "const a = (3 + 1);"))
-  (is (= (transpile "(foo 'a' 3)") "foo('a', 3)"))
+  (is (= (transpile-str "(const a 3)") "const a = 3;"))
+  (is (= (transpile-str "(const a (+ 3 1))") "const a = (3 + 1);"))
+  (is (= (transpile-str "(foo 'a' 3)") "foo('a', 3)"))
   ;; Make parser handle '(a b c)
   ;; Make parser handle operator
-  (is (= (transpile "(fn foo (list a b c) (return (+ (+ a b) c)))")
+  (is (= (transpile-str "(fn foo (list a b c) (return (+ (+ a b) c)))")
          "function foo(list, a, b, c) {return ((a + b) + c)}")))
