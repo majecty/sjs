@@ -22,17 +22,22 @@
         new-name (str base ".js")]
     new-name))
 
+(defn read-file
+  "Read file with error handling"
+  [file-name]
+  (try
+    (slurp file-name)
+    (catch Exception e
+      (log/trace e)
+      (f/fail "Cant't read file %s" file-name))))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
   (f/attempt-all
    [file-name (first args)
     new-file-name (make-output-file-name file-name)
-    file-contents (try
-                    (slurp file-name)
-                    (catch Exception e
-                      (log/trace e)
-                      (f/fail "Cant't read file %s" file-name)))
+    file-contents (read-file file-name)
     sexps (log/spyf "srcs %s"
                     (reader/read-file file-contents))
     jssrcs (map transpiler/transpile sexps)
