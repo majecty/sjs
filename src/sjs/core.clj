@@ -4,7 +4,7 @@
             [sjs.transpiler :as transpiler]
             [clojure.string :as str]
             [clojure.test :refer [is deftest]]
-            [clojure.tools.logging :as log]
+            [taoensso.timbre :as log]
             [failjure.core :as f]))
 
 (defn split-ext [file-name]
@@ -38,7 +38,7 @@
    [file-name (first args)
     new-file-name (make-output-file-name file-name)
     file-contents (read-file file-name)
-    sexps (log/spyf "srcs %s"
+    sexps (log/spy :debug "srcs %s"
                     (reader/read-file file-contents))
     jssrcs (map transpiler/transpile sexps)
     jssrc (str (str/join "\n\n" jssrcs) "\n")]
